@@ -1,4 +1,4 @@
-package com.leisen;
+package com.leisen.http;
 
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;

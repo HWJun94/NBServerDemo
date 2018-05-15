@@ -1,4 +1,4 @@
-package com.leisen;
+package com.leisen.http;
 
 import org.apache.mina.http.HttpRequestImpl;
 import org.apache.mina.http.api.HttpMethod;

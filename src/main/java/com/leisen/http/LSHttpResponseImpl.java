@@ -1,4 +1,4 @@
-package com.leisen;
+package com.leisen.http;
 
 import org.apache.mina.http.api.DefaultHttpResponse;
 import org.apache.mina.http.api.HttpResponse;

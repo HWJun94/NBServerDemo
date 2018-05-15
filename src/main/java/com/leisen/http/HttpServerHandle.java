@@ -1,5 +1,8 @@
-package com.leisen;
+package com.leisen.http;
 
+import com.leisen.QueueMessageConsumer;
+import com.leisen.QueueMessageProducer;
+import com.leisen.MessageStorage;
 import org.apache.mina.core.buffer.IoBuffer;
 import org.apache.mina.core.service.IoHandlerAdapter;
 import org.apache.mina.core.session.IoSession;
@@ -7,14 +10,12 @@ import org.apache.mina.http.api.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.net.URLDecoder;
-import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
 public class HttpServerHandle extends IoHandlerAdapter {
     private LSHttpRequestImpl request;
-    private Logger logger = LoggerFactory.getLogger(HttpServerHandle.class);
+    private static Logger logger = LoggerFactory.getLogger(HttpServerHandle.class);
 
     @Override
     public void exceptionCaught(IoSession session, Throwable cause) throws Exception {
@@ -31,8 +32,16 @@ public class HttpServerHandle extends IoHandlerAdapter {
     public void messageReceived(IoSession session, Object message) throws Exception {
         if (message instanceof HttpRequest) {
             request = (LSHttpRequestImpl) message;
+            //输出日志
             logger.info("Received: Header:\n{}", request.toString());
             logger.info("Received: Body:\n{}", request.getBody());
+
+            //添加消息入队任务
+            QueueMessageProducer queueMessageProducer = new QueueMessageProducer(request.getBody());
+            MessageStorage.executeProducer(queueMessageProducer);
+            //添加消息出队任务
+            QueueMessageConsumer queueMessageConsumer = new QueueMessageConsumer();
+            MessageStorage.executeConsumer(queueMessageConsumer);
 
         }else if (message instanceof IoBuffer) { //message包含body部分，已在解码器中处理，可不必理会
 //            System.out.println("--------IoBuffer--------");
@@ -67,4 +76,5 @@ public class HttpServerHandle extends IoHandlerAdapter {
         if (message instanceof HttpEndOfContent)
             session.closeNow();
     }
+
 }
