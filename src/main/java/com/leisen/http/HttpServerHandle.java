@@ -37,11 +37,7 @@ public class HttpServerHandle extends IoHandlerAdapter {
             logger.info("Received: Body:\n{}", request.getBody());
 
             //添加消息入队任务
-            QueueMessageProducer queueMessageProducer = new QueueMessageProducer(request.getBody());
-            MessageStorage.executeProducer(queueMessageProducer);
-            //添加消息出队任务
-            QueueMessageConsumer queueMessageConsumer = new QueueMessageConsumer();
-            MessageStorage.executeConsumer(queueMessageConsumer);
+            MessageStorage.put(request.getBody());
 
         }else if (message instanceof IoBuffer) { //message包含body部分，已在解码器中处理，可不必理会
 //            System.out.println("--------IoBuffer--------");

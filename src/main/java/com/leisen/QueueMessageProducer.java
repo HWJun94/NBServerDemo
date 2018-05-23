@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory;
 /**
  * 队列消息生产者（生产队列消息）
  */
-public class QueueMessageProducer implements Runnable {
+public class QueueMessageProducer implements QueueMessagePorter {
     private static final Logger logger = LoggerFactory.getLogger(QueueMessageConsumer.class);
 
     private Object message;

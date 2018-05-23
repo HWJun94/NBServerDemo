@@ -6,6 +6,7 @@ import com.leisen.http.LSHttpServerEncoder;
 import com.leisen.http.LSSSLContextFactory;
 import org.apache.mina.core.service.IoAcceptor;
 import org.apache.mina.filter.codec.ProtocolCodecFilter;
+import org.apache.mina.filter.logging.LogLevel;
 import org.apache.mina.filter.logging.LoggingFilter;
 import org.apache.mina.filter.ssl.SslFilter;
 import org.apache.mina.transport.socket.nio.NioSocketAcceptor;
@@ -15,16 +16,25 @@ import java.net.InetSocketAddress;
 public class NBServerDemo {
 
     public static void main(String[] args) throws Exception {
+        // init the storage
+        MessageStorage messageStorage = new MessageStorage();
+
+        // submit comsumers to ThreadPool
+        for (int i = 0; i < messageStorage.getNthreadsConsumer(); i++) {
+            QueueMessageConsumer queueMessageConsumer = new QueueMessageConsumer();
+            MessageStorage.executeConsumer(queueMessageConsumer);
+        }
+
+        //init the mina Server
         IoAcceptor acceptor = new NioSocketAcceptor();
-        //创建ssl过滤器
-        SslFilter sslFilter = new SslFilter(LSSSLContextFactory.getInstance());
+        SslFilter sslFilter = new SslFilter(LSSSLContextFactory.getInstance(true));
+//        sslFilter.setNeedClientAuth(true);
         acceptor.getFilterChain().addLast("sslfilter", sslFilter);
 //        acceptor.getSessionConfig().setReadBufferSize(1024*1024*2);
-        acceptor.getFilterChain().addLast("loggingfilterbefore", new LoggingFilter("loggingfilterbefore"));
+        LoggingFilter loggingFilter = new LoggingFilter("loggingfilterbefore");
+        acceptor.getFilterChain().addLast("loggingfilterbefore", loggingFilter);
         acceptor.getFilterChain().addLast("codec", new ProtocolCodecFilter(new LSHttpServerEncoder(), new LSHttpServerDecoder()));
-//        acceptor.getFilterChain().addLast("loggingfilterafter", new LoggingFilter("loggingfilterafter"));
         acceptor.setHandler(new HttpServerHandle());
         acceptor.bind(new InetSocketAddress(8443));
-
     }
 }

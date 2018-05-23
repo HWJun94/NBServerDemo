@@ -12,22 +12,31 @@ public class LSSSLContextFactory {
     private static final String KEYSTORE = "/keystore.jks";
     private static final String TRUSTSTORE = "/truststore.jks";
 
-    public static SSLContext getInstance() throws Exception {
+    private static final String CLIENT_KEYSTORE = "/outgoing.CertwithKey.pkcs12";
+    private static final String CLIENT_TRUSTSTORE = "/ca.jks";
+    private static final String CLIENT_KEYSTORE_PWD = "IoM@1234";
+    private static final String CLIENT_TRUSTSTORE_PWD = "Huawei@123";
+
+    private boolean serverMod;
+
+    public static SSLContext getInstance(boolean serverMod) throws Exception {
 
         //获取服务器根证书
-        KeyStore keyStore = KeyStore.getInstance("JKS");
-        InputStream kSIn = LSSSLContextFactory.class.getResourceAsStream(KEYSTORE);
-        keyStore.load(kSIn, KEYSTORE_PWD.toCharArray());
+        KeyStore keyStore = KeyStore.getInstance(serverMod ? "JKS" : "pkcs12");
+        InputStream kSIn = LSSSLContextFactory.class.getResourceAsStream(serverMod ? KEYSTORE : CLIENT_KEYSTORE);
+        String keystorePwd = serverMod ? KEYSTORE_PWD : CLIENT_KEYSTORE_PWD;
+        keyStore.load(kSIn, keystorePwd.toCharArray());
 
-        KeyManagerFactory kmf = KeyManagerFactory.getInstance("sunx509");
-        kmf.init(keyStore, KEYSTORE_PWD.toCharArray());
+        KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
+        kmf.init(keyStore, keystorePwd.toCharArray());
 
         //获取信任列表
         KeyStore trustStore = KeyStore.getInstance("JKS");
-        InputStream tsIn = LSSSLContextFactory.class.getResourceAsStream(TRUSTSTORE);
-        trustStore.load(tsIn, KEYSTORE_PWD.toCharArray());
+        InputStream tsIn = LSSSLContextFactory.class.getResourceAsStream(serverMod ? TRUSTSTORE : CLIENT_TRUSTSTORE);
+        String truststorePwd = serverMod ? KEYSTORE_PWD : CLIENT_TRUSTSTORE_PWD;
+        trustStore.load(tsIn, truststorePwd.toCharArray());
 
-        TrustManagerFactory tmf = TrustManagerFactory.getInstance("sunx509");
+        TrustManagerFactory tmf = TrustManagerFactory.getInstance("SunX509");
         tmf.init(trustStore);
 
         //创建SSLContext
