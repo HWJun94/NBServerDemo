@@ -26,7 +26,8 @@ public class MqttPushCallback implements MqttCallback{
 
     public void deliveryComplete(IMqttDeliveryToken token) {
         //publish之后会执行到这里
-//        System.out.println("deliveryComplete--" + token.isComplete());
+        System.out.println("deliveryComplete--" + token.isComplete());
+
     }
 
     public void messageArrived(String topic, MqttMessage message) throws Exception {

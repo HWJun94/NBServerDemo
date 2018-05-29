@@ -1,4 +1,4 @@
-package com.leisen;
+package com.leisen.msgqueue;
 
 public interface QueueMessagePorter extends Runnable{
     @Override

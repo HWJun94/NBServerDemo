@@ -1,8 +1,6 @@
 package com.leisen.http;
 
-import com.leisen.QueueMessageConsumer;
-import com.leisen.QueueMessageProducer;
-import com.leisen.MessageStorage;
+import com.leisen.msgqueue.MessageStorage;
 import org.apache.mina.core.buffer.IoBuffer;
 import org.apache.mina.core.service.IoHandlerAdapter;
 import org.apache.mina.core.session.IoSession;

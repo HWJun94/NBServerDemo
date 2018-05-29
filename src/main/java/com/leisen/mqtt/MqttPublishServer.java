@@ -1,5 +1,6 @@
 package com.leisen.mqtt;
 
+import com.leisen.util.ConfigUtil;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttDeliveryToken;
@@ -11,8 +12,6 @@ import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Scanner;
-
 /**
  * Title:Server 这是发送消息的服务端 Description: 服务器向多个客户端推送主题，即不同客户端可向服务器订阅相同主题
  */
@@ -20,9 +19,9 @@ public class MqttPublishServer {
     public static final Logger logger = LoggerFactory.getLogger(MqttPublishServer.class);
 
     // tcp://MQTT安装的服务器地址:MQTT定义的端口号
-    public static final String HOST = "tcp://mqttnewtest.mqtt.iot.gz.baidubce.com:1883";
+    public static final String HOST = ConfigUtil.config.getString("mqtthost");
     // 定义一个主题
-    public static final String TOPIC = "newtopic";
+    public static final String TOPIC = "bupt/admin/#";
     // 定义MQTT的ID，可以在MQTT服务配置中指定
     private static final String clientid = "mqttnewuser";
 
@@ -32,8 +31,8 @@ public class MqttPublishServer {
     private MqttTopic topic;
 //	private MqttMessage message;
 
-    private String userName = "mqttnewtest/mqttnewuser"; // 非必须
-    private String passWord = "9ovm+mk2rdfqAfI0oxHBEa5TVrzfMa2mcgX8UBeAvj0="; // 非必须
+    private String userName = ConfigUtil.config.getString("username"); // 非必须
+    private String passWord = ConfigUtil.config.getString("password"); // 非必须
 
 
     /**
@@ -79,7 +78,7 @@ public class MqttPublishServer {
             client.connect(options);
             // 设置topic主题，进行订阅,可以实现多主题订阅
             int[] Qos = { 1 };
-            String[] topic1 = { "newtopic"};
+            String[] topic1 = {TOPIC};
             client.subscribe(topic1, Qos);
 
         } catch (Exception e) {
@@ -93,7 +92,7 @@ public class MqttPublishServer {
     public void publish( String strTopic ,String strMessage) throws MqttPersistenceException, MqttException {
         // 初始化后设置message，获得topic，并连接服务器
         MqttMessage mqttMessage = new MqttMessage();
-        mqttMessage.setQos(1); // 保证消息能到达一次
+        mqttMessage.setQos(1); // 保证消息只发送一次
         mqttMessage.setRetained( false );
         mqttMessage.setPayload( strMessage.getBytes() );
 

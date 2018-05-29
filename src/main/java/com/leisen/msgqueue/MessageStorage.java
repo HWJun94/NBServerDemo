@@ -1,4 +1,4 @@
-package com.leisen;
+package com.leisen.msgqueue;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,11 +18,11 @@ public class MessageStorage {
     private static final int NTHREADS_CONSUMER = 3;
     private static final ExecutorService EXECUTOR_SERVICE_PRODUCER = Executors.newFixedThreadPool(2);
     private static final ExecutorService EXECUTOR_SERVICE_CONSUMER = Executors.newFixedThreadPool(NTHREADS_CONSUMER);
-    protected static BlockingQueue<Object> queue;
+    protected static BlockingQueue<Object> queue = new LinkedBlockingQueue<Object>(CAPACITY_DEFAULT);
 
     //constructor
     public MessageStorage() {
-        queue = new LinkedBlockingQueue<Object>(CAPACITY_DEFAULT);
+//        queue = new LinkedBlockingQueue<Object>(CAPACITY_DEFAULT);
     }
 
     public MessageStorage(int capacity) {
@@ -55,7 +55,7 @@ public class MessageStorage {
     public static void put(Object message) {
         try {
             MessageStorage.queue.put(message);
-            logger.warn("ProductedMessage:\n{}", message);
+            logger.info("ProductedMessage:\n{}", message);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
