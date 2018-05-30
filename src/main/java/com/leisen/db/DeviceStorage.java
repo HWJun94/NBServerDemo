@@ -10,12 +10,16 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class DeviceStorage {
-    private static Map deviceMap = new HashMap();
+    private static Map<String, String> deviceMap = new HashMap();
 
     public DeviceStorage() {
 //        deviceMap = new HashMap();
     }
 
+    /**
+     * 从数据库中将deviceId和IMEI加载到map中
+     * @throws SQLException
+     */
     public void loadFromDB() throws SQLException {
         Connection conn = JDBCUtil.getConnection();
         QueryRunner queryRunner = new QueryRunner();
@@ -27,7 +31,45 @@ public class DeviceStorage {
         }
     }
 
-    public Map getDeviceMap() {
+    public void reloadFromDB() throws SQLException {
+        this.loadFromDB();
+    }
+    /**
+     * 插入一条数据
+     * @param IMEI
+     * @param deviceId
+     * @throws SQLException
+     */
+    public void writeToDB(String IMEI, String deviceId) throws SQLException{
+        Connection conn = JDBCUtil.getConnection();
+        QueryRunner queryRunner = new QueryRunner();
+        String sql = "insert into deviceinfo (IMEI,deviceId) values (?,?)";
+        try {
+          queryRunner.update(conn, sql, IMEI, deviceId);
+        } finally {
+            DbUtils.close(conn);
+            deviceMap.put(IMEI, deviceId); //直接在map中添加新设备
+        }
+    }
+
+    /**
+     * 批量插入
+     * @param paras
+     * @throws SQLException
+     */
+    public void writeToDBBatched(Object[][] paras) throws SQLException{
+        Connection conn = JDBCUtil.getConnection();
+        QueryRunner queryRunner = new QueryRunner();
+        String sql = "insert into deviceinfo values(?,?)";
+        try {
+            queryRunner.batch(conn, sql, paras);
+        } finally {
+            DbUtils.close(conn);
+            this.reloadFromDB(); //批量插入结束后，重新加载缓存中的表
+        }
+    }
+
+    public Map<String, String> getDeviceMap() {
         return deviceMap;
     }
 }

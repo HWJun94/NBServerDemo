@@ -21,7 +21,7 @@ public class MqttPublishServer {
     // tcp://MQTT安装的服务器地址:MQTT定义的端口号
     public static final String HOST = ConfigUtil.config.getString("mqtthost");
     // 定义一个主题
-    public static final String TOPIC = "bupt/admin/#";
+    public static final String TOPIC = "bupt/device/#";
     // 定义MQTT的ID，可以在MQTT服务配置中指定
     private static final String clientid = "mqttnewuser";
 

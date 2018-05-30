@@ -1,5 +1,6 @@
 package com.leisen;
 
+import com.leisen.db.DeviceStorage;
 import com.leisen.http.HttpServerHandle;
 import com.leisen.http.LSHttpServerDecoder;
 import com.leisen.http.LSHttpServerEncoder;
@@ -24,6 +25,8 @@ public class NBServerDemo {
 
         // init the storage
         MessageStorage messageStorage = new MessageStorage();
+        DeviceStorage deviceStorage = new DeviceStorage();
+        deviceStorage.loadFromDB();
 
         // init the mqttclient
         MqttPublishServer mqttPublishServer = new MqttPublishServer();

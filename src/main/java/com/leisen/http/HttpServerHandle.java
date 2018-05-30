@@ -30,12 +30,21 @@ public class HttpServerHandle extends IoHandlerAdapter {
     public void messageReceived(IoSession session, Object message) throws Exception {
         if (message instanceof HttpRequest) {
             request = (LSHttpRequestImpl) message;
+            //判断请求路径，处理请求
+            String[] pathSplit = request.getRequestPath().split("/");
+            if (pathSplit.length <= 1 || !pathSplit[1].equals("NBIoT")) { //处理垃圾请求
+                session.closeNow();
+                return;
+            }
+            //TODO
+
             //输出日志
             logger.info("Received: Header:\n{}", request.toString());
             logger.info("Received: Body:\n{}", request.getBody());
 
             //添加消息入队任务
-            MessageStorage.put(request.getBody());
+            if (request.getBody() != null)
+                MessageStorage.put(request.getBody());
 
         }else if (message instanceof IoBuffer) { //message包含body部分，已在解码器中处理，可不必理会
 //            System.out.println("--------IoBuffer--------");

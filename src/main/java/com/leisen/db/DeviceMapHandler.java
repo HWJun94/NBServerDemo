@@ -7,10 +7,10 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class DeviceMapHandler implements ResultSetHandler<Map> {
+public class DeviceMapHandler implements ResultSetHandler<Map<String, String>> {
 
     @Override
-    public Map handle(ResultSet resultSet) throws SQLException {
+    public Map<String, String> handle(ResultSet resultSet) throws SQLException {
         Map<String, String> deviceMap = new HashMap<>();
         while(resultSet.next()) {
             String IMEI = resultSet.getString("IMEI");

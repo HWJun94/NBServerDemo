@@ -1,5 +1,6 @@
 package com.leisen.mqtt;
 
+import com.leisen.db.DeviceStorage;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
@@ -30,8 +31,19 @@ public class MqttPushCallback implements MqttCallback{
 
     }
 
-    public void messageArrived(String topic, MqttMessage message) throws Exception {
+    public void messageArrived(String topic, MqttMessage message) {
         // subscribe后得到的消息会执行到这里面
+        String[] topicSplit = topic.split("/");
+        String IMEI = topicSplit[topicSplit.length - 1];
+        DeviceStorage deviceStorage = new DeviceStorage();
+        String deviceId = deviceStorage.getDeviceMap().get(IMEI);
+        if (deviceId == null)
+            return;
+        String messageStr = new String(message.getPayload());
+
+        //通过httpclient下发命令请求
+        //TODO
+
         logger.info("接收消息主题 : {}", topic);
         logger.info("接收消息Qos : {}", message.getQos());
         logger.info("接收消息内容 : {}", new String(message.getPayload()));
