@@ -1,6 +1,7 @@
 package com.leisen.msgqueue;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.leisen.db.DeviceStorage;
 import com.leisen.util.ConfigUtil;
 import com.leisen.mqtt.MqttPublishServer;
 import org.eclipse.paho.client.mqttv3.MqttException;
@@ -36,15 +37,23 @@ public class QueueMessageConsumer implements QueueMessagePorter {
     public void run() {
         while(true) {
             try {
+                //消息出队，并解析从中获取deviceId
                 Object message = MessageStorage.queue.take();
                 ObjectMapper mapper = new ObjectMapper();
                 Map map = mapper.readValue((String)message, Map.class);
                 String deviceId = (String) map.get("deviceId");
-                String IMEI = ConfigUtil.config.getString(deviceId);
-                String strTopic = "bupt/admin/" + IMEI;
-                Object service = map.get("service");
-                String dataStr = mapper.writeValueAsString(service);
-                mqttPublishServer.publish(strTopic, dataStr);
+                //通过deviceId从表中找到对应的IMEI
+                DeviceStorage deviceStorage = new DeviceStorage();
+                String IMEI = deviceStorage.getDeviceIdMap().get(deviceId);
+
+                if (null != IMEI) {
+                    //拼接mqtt的topic
+                    String strTopic = "bupt/admin/" + IMEI;
+                    //获取消息中的数据内容并发布mqtt消息
+                    Object service = map.get("service");
+                    String dataStr = mapper.writeValueAsString(service);
+                    mqttPublishServer.publish(strTopic, dataStr);
+                }
                 logger.info("ConsumedMessage:\n{}", message);
             } catch (InterruptedException e) {
                 e.printStackTrace();

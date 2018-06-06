@@ -10,10 +10,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class DeviceStorage {
-    private static Map<String, String> deviceMap = new HashMap();
+    private static Map<String, String> deviceIMEIMap = new HashMap();
+    private static Map<String, String> deviceIdMap = new HashMap<>();
 
     public DeviceStorage() {
-//        deviceMap = new HashMap();
+//        deviceIMEIMap = new HashMap();
     }
 
     /**
@@ -25,7 +26,8 @@ public class DeviceStorage {
         QueryRunner queryRunner = new QueryRunner();
         String sql = "select * from deviceinfo";
         try {
-            deviceMap = queryRunner.query(conn, sql, new DeviceMapHandler());
+            deviceIMEIMap = queryRunner.query(conn, sql, new DeviceIMEIMapHandler());
+            deviceIdMap = queryRunner.query(conn, sql, new DeviceIdMapHandler());
         } finally {
             DbUtils.close(conn);
         }
@@ -48,7 +50,8 @@ public class DeviceStorage {
           queryRunner.update(conn, sql, IMEI, deviceId);
         } finally {
             DbUtils.close(conn);
-            deviceMap.put(IMEI, deviceId); //直接在map中添加新设备
+            deviceIMEIMap.put(IMEI, deviceId);//直接在map中添加新设备
+            deviceIdMap.put(deviceId, IMEI);
         }
     }
 
@@ -69,7 +72,11 @@ public class DeviceStorage {
         }
     }
 
-    public Map<String, String> getDeviceMap() {
-        return deviceMap;
+    public Map<String, String> getDeviceIMEIMap() {
+        return deviceIMEIMap;
+    }
+
+    public Map<String, String> getDeviceIdMap() {
+        return deviceIdMap;
     }
 }

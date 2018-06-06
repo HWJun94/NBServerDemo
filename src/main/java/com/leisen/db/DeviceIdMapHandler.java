@@ -7,16 +7,16 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class DeviceMapHandler implements ResultSetHandler<Map<String, String>> {
+public class DeviceIdMapHandler implements ResultSetHandler<Map<String, String>> {
 
     @Override
     public Map<String, String> handle(ResultSet resultSet) throws SQLException {
-        Map<String, String> deviceMap = new HashMap<>();
+        Map<String, String> deviceIdMap = new HashMap<>();
         while(resultSet.next()) {
             String IMEI = resultSet.getString("IMEI");
             String deviceId = resultSet.getString("deviceId");
-            deviceMap.put(IMEI, deviceId);
+            deviceIdMap.put(deviceId, IMEI);
         }
-        return deviceMap;
+        return deviceIdMap;
     }
 }

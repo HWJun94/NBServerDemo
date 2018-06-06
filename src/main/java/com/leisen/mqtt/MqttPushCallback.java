@@ -1,6 +1,7 @@
 package com.leisen.mqtt;
 
 import com.leisen.db.DeviceStorage;
+import com.leisen.http.httpclient.HttpAPIImpl;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
@@ -27,7 +28,7 @@ public class MqttPushCallback implements MqttCallback{
 
     public void deliveryComplete(IMqttDeliveryToken token) {
         //publish之后会执行到这里
-        System.out.println("deliveryComplete--" + token.isComplete());
+//        System.out.println("deliveryComplete--" + token.isComplete());
 
     }
 
@@ -36,13 +37,20 @@ public class MqttPushCallback implements MqttCallback{
         String[] topicSplit = topic.split("/");
         String IMEI = topicSplit[topicSplit.length - 1];
         DeviceStorage deviceStorage = new DeviceStorage();
-        String deviceId = deviceStorage.getDeviceMap().get(IMEI);
+        String deviceId = deviceStorage.getDeviceIMEIMap().get(IMEI);
         if (deviceId == null)
             return;
         String messageStr = new String(message.getPayload());
 
         //通过httpclient下发命令请求
         //TODO
+        HttpAPIImpl httpAPIImpl = new HttpAPIImpl();
+        try {
+            httpAPIImpl.Auth();
+            httpAPIImpl.deviceCommands(deviceId, messageStr);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         logger.info("接收消息主题 : {}", topic);
         logger.info("接收消息Qos : {}", message.getQos());
