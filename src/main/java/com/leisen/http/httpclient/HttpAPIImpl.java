@@ -29,7 +29,7 @@ public class HttpAPIImpl {
         createMap.put("secret",secret);
         HttpClientUtil httpClientUtil= new HttpClientUtil();
         String httpOrgCreateTestRtn = httpClientUtil.doPost(url,createMap,charset);
-        System.out.println("result:"+httpOrgCreateTestRtn);
+//        System.out.println("result:"+httpOrgCreateTestRtn);
 //        Map<String, Object> map = JsonToMap.toMap(httpOrgCreateTestRtn);
         Map map = (Map)JSONUtil.JSON2Object(httpOrgCreateTestRtn, Map.class);
         accessToken = (String) map.get("accessToken");
@@ -53,7 +53,7 @@ public class HttpAPIImpl {
         String jason = JSONUtil.object2JSON(map);
         HttpClientUtil httpClientUtil=new HttpClientUtil();
         String response = httpClientUtil.doPostForJson(url, jason,null);
-        System.out.println("respnse:"+response);
+//        System.out.println("respnse:"+response);
 //        Map<String, Object> map01 = JsonToMap.toMap(response);
         Map map01 = (Map) JSONUtil.JSON2Object(response, Map.class);
         accessToken = (String) map01.get("accessToken");
@@ -79,7 +79,7 @@ public class HttpAPIImpl {
         ObjectMapper mapper = new ObjectMapper();
         String jason = mapper.writeValueAsString(map);
 //		String jason=MapToJaon.MapToJason(map);
-        System.out.println(jason);
+//        System.out.println(jason);
         String response=httpClientUtil.doPostForJson(url, jason, headers);
 //		System.out.println(response);
 
@@ -112,9 +112,9 @@ public class HttpAPIImpl {
 //		String Json=MapToJaon.MapToJason(map03);
 
         String Json= mapper.writeValueAsString(map03);
-        System.out.println(Json);
+//        System.out.println(Json);
         String response=httpClientUtil.doPostForJson(url, Json, headers);
-        System.out.println(response);
+//        System.out.println(response);
     }
 //
 //    public static void main(String[] args) throws Exception {

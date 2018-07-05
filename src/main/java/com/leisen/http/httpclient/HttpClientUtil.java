@@ -17,10 +17,16 @@ import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.apache.http.Header;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /*
  * 利用HttpClient进行post请求的工具类
  */
 public class HttpClientUtil {
+    //logger
+    private static Logger logger = LoggerFactory.getLogger(HttpClientUtil.class);
+
     private static PoolingHttpClientConnectionManager connMgr;
     private static RequestConfig requestConfig;
     private static final int MAX_TIMEOUT = 7000;
@@ -82,7 +88,7 @@ public class HttpClientUtil {
                 HttpEntity resEntity = response.getEntity();
                 if(resEntity != null){
                     result = EntityUtils.toString(resEntity,charset);
-                    System.out.println(result);
+                    logger.info("Http Response:\n{}", result);
                 }
             }
         }catch(Exception ex){
@@ -118,7 +124,7 @@ public class HttpClientUtil {
                 HttpEntity resEntity = response.getEntity();
                 if(resEntity != null){
                     httpstr = EntityUtils.toString(resEntity,"utf-8");
-                    System.out.println(httpstr);
+                    logger.info("Http Response:\n{}", httpstr);
                 }
             }
         }catch(Exception ex){
